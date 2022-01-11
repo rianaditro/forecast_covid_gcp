@@ -1,0 +1,23 @@
+#Create multiple time series model with default settings
+CREATE OR REPLACE MODEL
+  `arima-333.covid19_id.weekly_forecast_model` OPTIONS(MODEL_TYPE='ARIMA_PLUS',
+    TIME_SERIES_TIMESTAMP_COL='date',
+    TIME_SERIES_DATA_COL='active_case',
+    TIME_SERIES_ID_COL='province') AS
+SELECT
+  date,
+  province,
+  active_case
+FROM
+  `arima-333.covid19_id.daily_data`
+WHERE
+  date < CURRENT_DATE()-7;
+#Create a table for forecast result after model created  
+CREATE OR REPLACE TABLE
+  `arima-333.covid19_id.forecast_result` AS
+SELECT
+  *
+FROM
+  ML.EXPLAIN_FORECAST(MODEL `arima-333.covid19_id.weekly_forecast_model`, #almost same as ML.FORECAST()
+    STRUCT(21 AS HORIZON,
+      0.8 AS CONFIDENCE_LEVEL));
