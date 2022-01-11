@@ -21,3 +21,10 @@ FROM
   ML.EXPLAIN_FORECAST(MODEL `arima-333.covid19_id.weekly_forecast_model`, #almost same as ML.FORECAST()
     STRUCT(21 AS HORIZON,
       0.8 AS CONFIDENCE_LEVEL));
+#Evaluate all model in a table
+CREATE OR REPLACE TABLE
+  `arima-333.covid19_id.weekly_evaluate_model` AS
+SELECT
+  *
+FROM
+  ML.EVALUATE(MODEL `arima-333.covid19_id.weekly_forecast_model`)
