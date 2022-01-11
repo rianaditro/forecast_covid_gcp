@@ -1,0 +1,50 @@
+  #Create table from counting absolute error from every timestamp
+CREATE OR REPLACE TABLE
+  `arima-333.covid19_id.pra_mape` AS
+WITH
+  data_aktual AS (
+  SELECT
+    date,
+    province,
+    active_case
+  FROM
+    `arima-333.covid19_id.daily_data`
+  WHERE
+    active_case >= 1 ),
+  #avoiding divided by 0
+  data_prediksi AS (
+  SELECT
+    *
+  FROM
+    `arima-333.covid19_id.weekly_forecast_result`
+  WHERE
+    time_series_type = 'forecast')
+SELECT
+  data_aktual.province,
+  data_prediksi.time_series_timestamp,
+  data_aktual.active_case,
+  data_prediksi.time_series_data,
+  data_prediksi.prediction_interval_lower_bound,
+  data_prediksi.prediction_interval_upper_bound,
+  ABS(data_aktual.active_case - data_prediksi.time_series_data)/data_aktual.active_case AS mape
+FROM
+  data_aktual AS data_aktual
+RIGHT JOIN
+  data_prediksi AS data_prediksi
+ON
+  data_aktual.date = EXTRACT(DATE
+  FROM
+    data_prediksi.time_series_timestamp)
+  AND data_aktual.province = data_prediksi.province
+WHERE
+  data_aktual.province IS NOT NULL;
+  #Create final mape table
+CREATE OR REPLACE TABLE
+  `arima-333.covid19_id.mape` AS
+SELECT
+  province,
+  AVG(mape) AS mape
+FROM
+  `arima-333.covid19_id.pra_mape`
+GROUP BY
+  province;
