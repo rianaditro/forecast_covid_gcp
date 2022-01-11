@@ -1,0 +1,27 @@
+#Ingest data from BigQuery Public Dataset Program
+SELECT
+  date,
+  new_recovered,
+  new_deceased,
+  new_confirmed,
+  cumulative_recovered,
+  cumulative_confirmed,
+  cumulative_deceased,
+  cumulative_confirmed - cumulative_recovered - cumulative_deceased AS active_case,
+  location_key,
+  IFNULL(subregion1_name,
+    'Indonesia') AS province,
+  latitude,
+  longitude,
+  population,
+  area_sq_km,
+  location_geometry
+FROM
+  `bigquery-public-data.covid19_open_data.covid19_open_data`
+WHERE
+  country_name = 'Indonesia'
+  AND aggregation_level < 2
+  AND new_confirmed IS NOT NULL
+  AND date BETWEEN DATE_SUB(CURRENT_DATE(), INTERVAL 5 WEEK) AND CURRENT_DATE()
+ORDER BY
+  date DESC
