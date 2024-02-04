@@ -10,4 +10,5 @@ Using Scheduled Query to re-run model creation and update dataset to gain new fo
 ![git scheduled model](https://github.com/rianaditro/forecast_covid_gcp/assets/82931308/849d0230-c788-494e-9473-96ca3f07ca21)
 
 Using MAPE to evaluate forecast vs actual data
+
 ![mape 2](https://github.com/rianaditro/forecast_covid_gcp/assets/82931308/fb31a3e6-19cf-465e-911e-5332c13b392b)
